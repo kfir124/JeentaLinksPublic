@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block main %}
+    <form method='post' action="/login">
+    {{ forms.csrf_field() }}
+        {% if error %}
+            <span style="color:red">{{ error }}</span><br />
+        {% endif %}
+        <table border="0" align="center" class="forms_table">
+            {{ forms.render_field(form.username) }}
+            {{ forms.render_field(form.password) }}
+        </table>
+      <p><input class="btn btn-danger" type='submit' value='Login'></p>
+    </form>
+{% endblock main %}

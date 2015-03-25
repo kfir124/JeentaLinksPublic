@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <p><strong>Tab default images</strong></p>
+    <table class="table auto_width centered">
+        <tr>
+           <td style="width:300px;">
+               {% for tab in tabs %}
+                   {% set default_class = 'tab_button btn btn-inverse' %}
+                    <a id="tab_btn{{ loop.index0 }}" href="#" class="{{ default_class }}" style="margin:5px; width:70%">{{ tab.name }}</a><br />
+                    <script>
+                    $('#tab_btn{{ loop.index0 }}').click(function() {
+                        $('#page_view').load('/tabimage/{{ tab.id }}/{{ loop.index0 }}');
+                        {# reset all the other buttons to look the same #}
+                        $('.tab_button').attr('class', '{{ default_class }}');
+                        {# and cause our button to be unique #}
+                        $(this).attr('class', 'tab_button btn btn-primary');
+                    });
+                    </script>
+               {% endfor %}
+           </td>
+           <td style="width:600px;border:1px solid black;">
+               <div class="centered">
+                   <form id="page_view" method='post' enctype=multipart/form-data action="/tabimages">
+
+                   </form>
+               </div>
+           </td>
+        </tr>
+    </table>
+    <script>
+        $(document).ready(function() {
+            $('#tab_btn{{ last_btn }}').click();
+        });
+    </script>
+{% endblock main %}

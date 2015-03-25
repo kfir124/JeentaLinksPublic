@@ -1,0 +1,1 @@
+from simple import simple  # for index and suchfrom actions import actions  # for actions like /do/register and suchfrom ajax import ajax  # for all the ajax/sijax requests

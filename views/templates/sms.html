@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block main %}
+    <form method='post' action="/sms">
+    {{ forms.csrf_field() }}
+        <table border="0" class="forms_table">
+            {{ forms.render_field(form.password) }}
+            {{ forms.render_field(form.number) }}
+            {{ forms.render_field(form.msg) }}
+        </table>
+      <p><input class="btn btn-danger" type='submit' value='Send'></p>
+      {% if form.done %}
+        <p>Done!</p>
+      {% endif %}
+    </form>
+{% endblock main %}

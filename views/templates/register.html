@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block main %}
+    <form method='post' action="/register">
+    {{ forms.csrf_field() }}
+        <table border="0" class="forms_table">
+            {{ forms.render_field(form.username) }}
+            {{ forms.render_field(form.portal_name) }}
+            {{ forms.render_field(form.password) }}
+            {{ forms.render_field(form.confirm) }}
+        </table>
+      <p><input class="btn btn-danger" type='submit' value='Register'></p>
+    </form>
+{% endblock main %}

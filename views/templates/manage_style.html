@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="/static/CSS/colorpicker.css" />
+{% endblock extra_css %}
+{% block extra_js %}
+    <script src="/static/javascript/colorpicker.js"></script>
+{% endblock extra_js %}
+{% block main %}
+    <p><strong>Style manager</strong></p>
+    <form method='post' enctype=multipart/form-data action="/managestyle">
+    {{ forms.csrf_field() }}
+        <table class="table auto_width centered">
+            <tr>
+                <th>Name</th>
+                <th>Current value</th>
+                <th>Change to</th>
+            </tr>
+            <tr>
+                <td>
+                    site logo
+                </td>
+                <td>
+                    <div class="centered" style="border:1px solid black;">
+                        {% set logo_image_path = logo_image_path or '/static/img/logo.png' %}
+                        <img src="{{ logo_image_path }}" style="cursor:auto;width:300px;height:100px;">
+                    </div>
+                </td>
+                <td>
+                    <div class="centered"><input id="logo_change" name="logo_change" type="file"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    background color
+                </td>
+                <td>
+                    <div class="centered">
+                        
+                    </div>
+                </td>
+                <td>
+                   {{ forms.choose_color('background_color', background_color|default('#FFFFFF')) }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    font color
+                </td>
+                <td>
+                    <div class="centered">
+
+                    </div>
+                </td>
+                <td>
+                   {{ forms.choose_color('font_color',  font_color|default('#000000')) }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    match header & background color
+                </td>
+                <td>
+                    <div class="centered">
+
+                    </div>
+                </td>
+                <td>
+                   <div class="centered">
+                       {% set checked = 'checked' if match_header_color else '' %}
+                       <input type='checkbox' id='match_header_color' name='match_header_color' value="True" {{ checked }}>
+                   </div>
+                </td>
+            </tr>
+        </table>
+        <p><input type='submit' value='update' class="btn btn-success">
+        <a href="/" class="btn btn-inverse">back</a>
+        </p>
+    </form>
+
+{% endblock main %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block main %}
+    <p><strong>adding a new tab</strong></p>
+    <form method='post' action="/tab/add">
+    {{ forms.csrf_field() }}
+        <table border="0" class="forms_table">
+            {{ forms.render_field(form.name) }}
+        </table>
+      <p><input type='submit' value='update' class="btn btn-inverse"></p>
+    </form>
+{% endblock main %}

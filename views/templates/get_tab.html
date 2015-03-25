@@ -1,0 +1,17 @@
+{% import '_formhelpers.html' as forms %}
+<script>
+    function delete_cell(website_id)
+    {
+        var website_cell = $(website_id);
+        website_cell.html($("#emptyCell").html());
+        website_cell.toggleClass('cursor_hand', true);
+        {{ forms.sijax_request('delete_website', "[website_cell.attr('id')]") }}
+    }
+
+    function capture_image(website_id)
+    {
+        var website_cell = $(website_id);
+        {{ forms.sijax_request('capture_image', "[website_cell.attr('id')]") }}
+    }
+</script>
+{{ forms.print_websites(rows|default(0), items_per_row|default(0), websites, edit_mode, tab_id, default_image) }}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block extra_js %}
+    <script src="/static/javascript/autosize.min.js"></script>
+{% endblock extra_js %}
+
+{% block main %}
+    <script>
+        $(document).ready(function(){
+            $('#long_comment').autosize();
+        });
+    </script>
+    <p><strong>adding a new website</strong></p>
+    <form method='post' enctype=multipart/form-data action="/website/edit/{{ website_id }}/{{tab_id}}">
+    {{ forms.csrf_field() }}
+        <table border="0" class="forms_table">
+            {{ forms.render_field(form.url) }}
+            {{ forms.render_field(form.desc) }}
+            {{ forms.render_field(form.image) }}
+            <tr><td><p class="alert-danger">
+                please leave the image empty if you wish Jeentalinks to snapshot the website for you
+            </p></td></tr>
+            {{ forms.render_field(form.long_comment, style='height:100px; width: 600px;') }}
+        </table>
+        <p>choose image from your static images</p>
+        <table class="table auto_width centered">
+            <tr>
+                {% for image in static_images %}
+                    {% set img_url = image.path or '/static/img/default.jpg' %}
+                    <td><label for="{{ 'choice_%d' % loop.index0 }}"><img class="img-rounded website_image static_image" src="{{ img_url }}"></label></td>
+                {% endfor %}
+            </tr>
+            <tr>
+               {% for image in static_images %}
+                   {% set disabled = 'disabled' if not image.path else '' %}
+                      <td>
+                          <div class="centered">
+                              <input id="{{ 'choice_%d' % loop.index0 }}" type="radio" name="chosen_image" value="{{ image.id }}" {{ disabled }}/>
+                          </div>
+                      </td>
+               {% endfor %}
+            </tr>
+        </table>
+        <p>
+            <label for="uploaded_image">i want to use the image i've uploaded in the form</label>
+            <input id="uploaded_image" type="radio" name="chosen_image" value="uploaded_image" checked/>
+        </p>
+      <p><input type='submit' value='update' class="btn btn-inverse">
+          <a href="#" onclick="javascript:history.go(-1);return false;" class="btn btn-danger">cancel</a>
+      </p>
+    </form>
+{% endblock main %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+     <link type="text/css" rel="stylesheet" href="/static/CSS/jquery.contextmenu.css" />
+{% endblock extra_css %}
+
+{% block extra_js %}
+    <script src="/static/javascript/jquery.contextmenu.js"></script>
+{% endblock extra_js %}
+
+{% block toppestdivmid %}
+    
+{% endblock toppestdivmid %}
+
+{% block before_main %}
+
+{% endblock before_main %}
+
+{% block main %}
+    <script>
+      active_tab = $.cookie("last_tab_index");
+      if (active_tab >= {{ tabs|length }}) {
+          active_tab = 0;
+      }
+      $(function() {
+        $( "#tabs" ).tabs(
+        {
+          {% if is_owner %}
+            active: $.cookie("last_tab_index"),
+          {% endif %}
+          beforeLoad: function( event, ui ) {
+            ui.jqXHR.error(function() {
+              ui.panel.html("Couldn't load this tab. We'll try to fix this as soon as possible");
+            });
+          }
+        });
+      });
+    </script>
+    <div id="tabs">
+        <ul>
+            {% for tab in tabs %}
+                {% set icon_type = 'icon-globe' if tab.shared else '' %}
+                <li><a id="tab-{{ loop.index0 }}" href="/tabs/{{ tab.id }}">{{ tab.name }} <i class="{{ icon_type }}"></i></a></li>
+                {% if is_owner %}
+                    <script>
+                        var tab = $('#tab-{{ loop.index0 }}');
+                        tab.mouseup(function(){
+                          $.cookie("last_tab_index", {{ loop.index0 }}, { expires : 300 , path : '/'});
+                        });
+                        tab.droppable
+                        ({
+                          hoverClass: "highlight",                              
+                          drop: function( event, ui )
+                          {
+                            ui.draggable.toggle( "fade" );
+                            {{ forms.sijax_request('move_cell_to_tab', "[%s, ui.draggable.attr('id')]" % tab.id) }}
+                          }
+                        });
+                    </script>
+                {% endif %}
+            {% endfor %}
+            {% if is_owner %}
+                <li><a href="#znew_tab"><i class="icon-plus-sign icon-white"></i></a></li>
+            {% endif %}
+            <script>
+                $('a[href="#znew_tab"]').click(function(){
+                  window.location = '/tab/add'
+                });
+            </script>
+        </ul>
+    </div>
+{% endblock main %}

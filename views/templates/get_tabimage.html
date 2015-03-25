@@ -1,0 +1,21 @@
+{% import '_formhelpers.html' as forms %}
+{{ forms.csrf_field() }}
+<table class="centered">
+    <input type="hidden" name="tab_id" value="{{ tab_id }}">
+    <input type="hidden" name="last_btn" value="{{ last_btn }}">
+    <tr>
+        <td>
+            <img class="img-rounded website_image static_image" src="{{ image_path }}">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input id="choose_tab_image" name="choose_tab_image" type="file">
+        </td>
+    </tr>
+</table>
+<script>
+    $("#choose_tab_image").on("change", function() {
+        $("#page_view").submit();
+    });
+</script>

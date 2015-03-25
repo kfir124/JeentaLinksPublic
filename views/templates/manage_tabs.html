@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block main %}
+    <p><strong>Tabs manager</strong></p>
+       <table class="table table-striped auto_width centered">
+            <tr>
+                <th>Tab name</th>
+                <th>Hidden</th>
+                <th>Delete?</th>
+				<th>Shared</th>
+                <th>Transfer</th>
+            </tr>
+           {% for tab in tabs %}
+               <tr>
+                 <td><div id="tab_name_{{ loop.index0 }}">{{ tab.name }}</div></td>
+                 <script>
+                     $(function()
+                     {
+                        var clickable = true;
+                        $('#tab_name_{{ loop.index0 }}').click(function()
+                        {
+                            if (!clickable)
+                                return;
+                            clickable = false;
+                            $(this).html('<input id="editable_name_{{ loop.index0 }}" type="text" value="' + $(this).html() + '">');
+                            var the_field = $('#editable_name_{{ loop.index0 }}');
+                            the_field.focusout(function(e)
+                            {
+                                $(this).parent().html($(this).val());
+                                {{ forms.sijax_request('edit_tab_text', '[%s, $(this).val()]' % tab.id) }}
+                                clickable = true;
+                            });
+                            the_field.focus();
+                        });
+                     });
+                 </script>
+                 {% set icon_type='icon-eye-close' if tab.hidden else 'icon-eye-open' %}
+                 <td>
+					<div class="centered"><i id="hide_tab_{{ loop.index0 }}" class="{{ icon_type }} icon-large cursor_hand"></i></div>
+                 </td>
+					 <script>
+						 $(function()
+						 {
+							$('#hide_tab_{{ loop.index0 }}').click(function(e)
+							{
+								{{ forms.sijax_request('hide_tab', "[%s]" % tab.id) }}
+								$.cookie("last_tab_index", 0, { expires : 300 , path : '/'});
+								$(this).toggleClass('icon-eye-open');
+								$(this).toggleClass('icon-eye-close');
+							});
+						 });
+					 </script>
+                 <td>
+					<div class="centered"><i id="delete_tab_{{ loop.index0 }}" class="icon-remove cursor_hand"></i></div>
+                 </td>
+					 <script>
+						$(function()
+						{
+							$('#delete_tab_{{ loop.index0 }}').click(function(e) {
+								e.preventDefault();
+								if (window.confirm("Are you sure you want to delete this tab? there is no way back afterwards!")) {
+									{{ forms.sijax_request('delete_tab', "[%s]" % tab.id) }}
+									$.cookie("last_tab_index", 0, { expires : 300 , path : '/'});
+									$(this).html('<i>Deleted</i>');
+                                    $(this).toggleClass('icon-remove');
+                                    $(this).toggleClass('cursor_hand');
+                                    $(this).unbind('click');
+								}
+							});
+						});
+					 </script>
+				{% set icon_type='icon-globe' if tab.shared else 'icon-key' %}
+				<td>
+					<div class="centered"><i id="shared_tab_{{ loop.index0 }}" class="{{ icon_type }} cursor_hand"></i></div>
+				</td>
+					<script>
+						$(function()
+						 {
+							$('#shared_tab_{{ loop.index0 }}').click(function(e)
+							{
+								{{ forms.sijax_request('share_tab', "[%s]" % tab.id) }}
+								$(this).toggleClass('icon-globe');
+								$(this).toggleClass('icon-key');
+							});
+						 });
+					 </script>
+                <td>
+                    <div class="centered">
+                        <i id="transfer_tab_{{ loop.index0 }}" class="icon-exchange cursor_hand"></i>
+                    </div>
+                </td>
+                    <script>
+						$(function()
+						 {
+                            var transfer_tab = $('#transfer_tab_{{ loop.index0 }}');
+							transfer_tab.click(function(e)
+							{
+                                var username = prompt("Enter the username of the receiver");
+                                {{ forms.sijax_request('transfer_tab', "[%s, username, %s]" % (tab.id, loop.index0)) }}
+							});
+						 });
+					 </script>
+               </tr>
+           {% endfor %}
+           <script>
+           function clean_row(index)
+           {
+                var row = $('#transfer_tab_' + index);
+                row.html('done!');
+                row.toggleClass('icon-exchange');
+                row.toggleClass('cursor_hand');
+                row.unbind('click');
+           }
+           </script>
+        </table>
+    {{ forms.button('bckButton', 'Back', 'history.back()') }}
+{% endblock main %}

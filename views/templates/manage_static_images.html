@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <p><strong>Static images</strong></p>
+    <form method='post' enctype=multipart/form-data action="/staticimages">
+    {{ forms.csrf_field() }}
+    {# how many pages back do we need to send the user [history.go(X)] #}
+    <input type="hidden" name="num_back" value="{{ num_back|default(-1) }}">
+    {% for i in range(tables_number) %}
+        <table class="centered table auto_width">
+            <tr>
+                {% for j in range(images_per_table) %}
+                    {% set index = i * images_per_table + j %}
+                    {% set image = static_images[index] %}
+                    {% set img_url = image.path or '/static/img/default.jpg' %}
+                    <td><img class="img-rounded website_image static_image" src="{{ img_url }}"></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for j in range(images_per_table) %}
+                    {% set index = i * images_per_table + j %}
+                    {% set image = static_images[index] %}
+                    {% if not image.id %}
+                        {% set name = 'None_static_photo_%d' % index %}
+                    {% else %}
+                        {% set name = 'static_photo_%d' % image.id %}
+                    {% endif %}
+                    <td><input id="{{ name }}" name="{{ name }}" type="file"></td>
+                {% endfor %}
+            </tr>
+        </table>
+    {% endfor %}
+        <p><input type='submit' value='update' class="btn btn-success">
+        <a href="#" onclick="javascript:history.go({{ num_back|default(-1) }});return false;" class="btn btn-danger">cancel</a>
+        </p>
+    </form>
+
+{% endblock main %}

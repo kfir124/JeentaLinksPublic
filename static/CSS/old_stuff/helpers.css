@@ -1,0 +1,8 @@
+/* fits a given number of items into the width of the screen */
+/* fits a given number of items into the height of the screen */
+/* !!!!!!!!!!! this section fits the different 2.4.2 twitter bootstrap buttons to a specific height !!!!!!!!!!! */
+/* in case of a normal btn we need to substract 10 pixels of the height */
+/* in case of a large btn we need to substract 24 pixels of the height */
+/* in case of a small btn we need to substract 6 pixels of the height */
+/* in case of a mini btn we need to substract 6 pixels of the height */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/

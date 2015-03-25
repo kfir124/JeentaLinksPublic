@@ -1,0 +1,50 @@
+@import "compass/css3/shared"; /* adds all the -moz -o -webkit shit */
+
+/* using the css calc function */
+@mixin calc($property, $expression)
+{
+  @include experimental-value($property, calc(#{$expression}));
+}
+
+
+/* fits a given number of items into the width of the screen */
+@mixin fit_width_to_screen($items_per_row, $property:width, $offset:0)
+{
+  //if offset is 0 or the browser does not support calc
+  #{$property}: (100% / $items_per_row);
+  //no point on calling it if offset is 0
+  @if $offset != 0
+  {
+    @include calc($property, "(100% / #{$items_per_row}) - #{$offset}");
+  }
+}
+
+
+/* fiting the twitter's bootstrap 2.4.2 buttons to a specific height */
+/* in case of a normal btn we need to substract 10 pixels of the height */
+@mixin fit_btn_height($height, $btn-type: default)
+{
+  @if $btn-type == default {
+    /* in case of a default btn we need to substract 24 pixels of the height */
+    height: $height - 10px;
+  } @else if $btn-type == large {
+    /* in case of a large btn we need to substract 24 pixels of the height */
+      height: $height - 24px;
+  } @else if $btn-type == small {
+    /* in case of a small btn we need to substract 6 pixels of the height */
+      height: $height - 6px;
+  } @else if $btn-type == mini {
+    /* in case of a mini btn we need to substract 6 pixels of the height */
+      height: $height - 2px;
+  } @else {
+    height: $height;
+  }
+}
+
+/* center stuff */
+@mixin centered
+{
+    text-align:center;
+    margin-left: auto ;
+    margin-right: auto ;
+}

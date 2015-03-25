@@ -1,0 +1,244 @@
+{% macro button(name, value='', action='')%}
+    <button name="{{ name|safe }}" id="{{ name|safe }}" class="btn btn-inverse">{{ value }}</button>
+    {% if action %}
+        <script>
+            $("#{{ name|safe }}").click(function(){
+                {{ action|safe }}
+             });
+        </script>
+    {% endif %}
+{% endmacro %}
+
+{% macro csrf_field() %}
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token()|safe }}">
+{% endmacro %}
+
+{% macro render_field(field) %}
+  <tr><td>{{ field.label(class='centered', style='max-width:300px;') }}</td></tr>
+  {% if field.errors %}
+    <tr><td style="color:red;">• {{  field.errors[0] }}</td></tr>
+  {% endif %}
+  <tr><td>{{ field(**kwargs) }}</td></tr>
+{% endmacro %}
+
+{% macro make_website(url, image, title, name, mode='normal', hidden_empty_cell=False) %}
+    {% set target = '_blank' %}
+    {% if url == '#' %}
+        {% set target = '_self' %}
+    {% endif %}
+    {% if hidden_empty_cell %}
+        {% set custom_style = 'style="display:none;"' %}
+        {% set custom_id = 'id="emptyCell"' %}
+    {% endif %}
+    <a {{ custom_id|default('')|safe }} {{ custom_style|default('')|safe }} href="{{ url }}" target="{{ target }}"><img class="img-rounded website_image" src="{{ image|safe }}" title="{{ title }}" alt="{{ title }}" style="height:100%; width:100%;"></a>
+{% endmacro %}
+
+{% macro make_empty_website(mode='normal', image='', hidden_empty_cell=False) %}
+    {{ make_website('#', image or '/static/img/default.jpg', 'example', 'Empty', mode, hidden_empty_cell) }}
+{% endmacro %}
+
+{% macro sijax_request(func_name, arg_list) %}
+    Sijax.request('{{ func_name|safe }}', {{ arg_list|safe }}, {'headers': {'X-CSRFToken':'{{ csrf_token()|safe }}'}});
+{% endmacro %}
+
+{% macro print_websites(rows=0, items_per_row=0, websites=None, edit_mode=False, tab_id=0, default_image='') %}
+    {% set rows = rows or 4 %}
+    {% set items_per_row = items_per_row or 6 %}
+    {# set a special hidden empty cell which is used when we delete a websiteCell in get_tab [we need to copy an empty cell html from somewhere] #}
+    {{ make_empty_website('edit' if edit_mode, default_image, hidden_empty_cell=True) }}
+    <table id="websites_table">
+        {% for count_row in range(rows) %}
+            <tr>
+            {% for count_item in range(items_per_row) %}
+                {% set index = count_row * items_per_row + count_item %}
+                {% if websites and websites[index] %}
+                    <td id="website{{ websites[index].id }}" class="filledWebsite" style="{{ style }}">
+                    {{ make_website(websites[index].url, websites[index].image_path, websites[index].desc, websites[index].name, 'edit' if edit_mode) }}
+                    <script>
+                        {% set web_id = '#website' ~ (websites[index].id) %}
+                        $('{{ web_id }}').contextPopup({
+                            title: 'Website menu',
+                            items: [
+                            {label:'Edit',     icon:'/static/icons/blue_edit.png', action: function() { do_context_action('redirect', '/website/edit/{{ websites[index].id }}/{{ tab_id }}') } },
+                            {label:'Remove', icon:'/static/icons/blue_delete.png', action:function() { do_context_action('delete', '{{ web_id }}') } },
+                            {label:'Capture image', icon:'/static/icons/blue_imagelink.png', action:function() { do_context_action('capture image', '{{ web_id }}') } },
+                            {label:'Attachment', icon:'/static/icons/blue_gallerylink.png', action:function() { do_context_action('attachment', '{{ web_id }}') } },
+                            ]});
+                    </script>
+                {% else %}
+                    <td class="emptyWebsite">
+                    {{ make_empty_website('edit' if edit_mode, default_image) }}
+                {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        {% if edit_mode %}
+            <script>
+              $(function()
+              {
+                var filled_websites = $(".filledWebsite");
+                filled_websites.draggable({ revert: true });
+                filled_websites.droppable
+                ({
+                  drop: function( event, ui )
+                  {
+                    var bkup = $(this).html();
+                    $(this).html(ui.draggable.html());
+                    ui.draggable.html(bkup);
+                    ui.draggable.toggleClass('cursor_hand', true);
+                    $(this).toggleClass('cursor_hand', true);
+                    {{ sijax_request('swap_websites', "[$(this).attr('id'), ui.draggable.attr('id')]") }}
+                  }
+                });
+              });
+              
+            $(function()
+            {
+               var empty_websites = $(".emptyWebsite");
+               empty_websites.click(function() {
+                    $('#quick_add_url').val('');
+                    $('#myModal').modal();
+                    setTimeout(function() {
+                        $('#quick_add_url').focus();
+                    }, 800); 
+                });
+            });
+            
+            </script>
+            <div id="myModal" class="modal hide fade" style='color:black;' tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Quick add website</h3>
+              </div>
+              <div class="modal-body">
+                <p>
+                    <label for="quick_add_url">URL:</label>
+                    <input type='text' name='quick_add_url' id='quick_add_url'>
+                </p>
+                <script>
+                    function save_quick_add_url(url) {
+                       var name = url.replace('http://', '').replace('https://', '').replace('www.', '').split('.')[0];
+                       {{ sijax_request('add_quick_website', "[url, name, %d]" % tab_id) }} 
+                    }
+                    function refresh(){
+                        location.reload();
+                    }
+                    $(function()
+                    {
+                       $('#quick_add_url').bind('paste', function() {
+                          var element = this;
+                          setTimeout(function () {
+                            var url = $(element).val();
+                            if (url.indexOf('.') != -1) {
+                                $('#myModal').modal('hide')
+                                save_quick_add_url(url);
+                            }
+                          }, 100);
+                       });
+                    });
+                </script>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" id='btn_save_quick_add_url'>Submit</button>
+                <script>
+                    $(function()
+                    {
+                       $('#btn_save_quick_add_url').click(function() {
+                            save_quick_add_url($('#quick_add_url').val());
+                       });
+                    });
+                </script>
+              </div>
+            </div>
+        {% endif %}
+        <script>
+            $(function()
+            {
+               var websites = $(".emptyWebsite, .filledWebsite");
+               $(".website_image").tooltip({container: 'body'});
+               websites.mouseover(function(){
+                   $(this).css({opacity: 0.5});
+               });
+
+               websites.mouseout(function(){
+                   $(this).css({opacity: 1});
+               });
+            });
+            
+
+        </script>
+    </table>
+    <script>
+        function are_you_sure(msg) {
+            if (window.confirm("are you sure " + msg)) {
+                return true;
+            }
+            return false;
+        }
+        
+        function do_context_action(action, data) {
+            // this part just stops the stupid 'called twice' bug
+            var $this = $(this);
+            var now = new Date();
+            var lastClicked = $this.data("lastClicked");
+            if (lastClicked && (now - lastClicked) < 1000) { // wait 1 second before allowing the event to be called again
+                // Don't do anything
+                return;
+            }
+            $this.data("lastClicked", now);
+            ////////////////////////////////////////////////////
+            switch (action)
+            {
+                case 'redirect':
+                    window.location = data;
+                    break;
+                case 'delete':
+                    if (are_you_sure('you want to DELETE this cell?')) {
+                        delete_cell(data);
+                    }
+                    break;
+                case 'capture image':
+                    if (are_you_sure('you want to change this cell image?')) {
+                        capture_image(data);
+                    }
+                    break;
+                case 'attachment':
+                    alert('attach!');
+                    break;
+            }
+            $this.data("lastClicked", new Date());
+        }
+        $('.emptyWebsite').contextPopup({
+            title: 'Empty website menu',
+            items: [
+            {label:'Add new website',     icon:'/static/icons/blue_up.png', action: function() { do_context_action('redirect', '/website/edit/0/{{ tab_id }}') } },
+        ]});
+    </script>
+{% endmacro %}
+
+{% macro choose_color(div_id, current_color='') %}
+    {% set current_color = current_color or '#0000ff' %}
+    {% set value_id = div_id + '_value' %}
+    <input type="hidden" name="{{ value_id }}" id="{{ value_id }}" value="{{ current_color }}">
+    <div id="{{ div_id }}" class="centered">
+    <div style="background-color: {{ current_color }}" class="colorpicker_cell centered"></div>
+        <script>
+            $('#{{ div_id }}').ColorPicker({
+                color: '{{ current_color }}',
+                onShow: function (colpkr) {
+                    $(colpkr).fadeIn(500);
+                    return false;
+                },
+                onHide: function (colpkr) {
+                    $(colpkr).fadeOut(500);
+                    return false;
+                },
+                onChange: function (hsb, hex, rgb) {
+                    $('#{{ div_id }} div').css('backgroundColor', '#' + hex);
+                    $('#{{ value_id }}').val('#' + hex);
+                }
+            });
+        </script>
+    </div>
+{% endmacro %}

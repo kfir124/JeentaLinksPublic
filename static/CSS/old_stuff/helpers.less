@@ -1,0 +1,70 @@
+.calc_width(@percent, @number) when not(@number = 0)
+{
+  @pixeled_number: @number + 0px;
+  /* Firefox */
+  width: -moz-calc(~"@{percent} + @{pixeled_number}");
+  /* WebKit */
+  width: -webkit-calc(~"@{percent} + @{pixeled_number}");
+  /* Opera */
+  width: -o-calc(~"@{percent} + @{pixeled_number}");
+  /* Standard */
+  width: calc(~"@{percent} + @{pixeled_number}");
+}
+.calc_height(@percent, @number) when not(@number = 0)
+{
+  @pixeled_number: @number + 0px;
+  /* Firefox */
+  height: -moz-calc(~"@{percent} + @{pixeled_number}");
+  /* WebKit */
+  height: -webkit-calc(~"@{percent} + @{pixeled_number}");
+  /* Opera */
+  height: -o-calc(~"@{percent} + @{pixeled_number}");
+  /* Standard */
+  height: calc(~"@{percent} + @{pixeled_number}");
+}
+
+/* fits a given number of items into the width of the screen */
+.fit_width_to_screen(@items_per_row, @offset: 0)
+{
+  //if offset is 0 or the browser does not support calc
+  width: (100 / @items_per_row) + 0%;
+  //and if it does:
+  //lessen offset if needed
+  @substract: -(@offset);
+  .calc_width((100 / @items_per_row + 0%), @substract);
+}
+
+/* fits a given number of items into the height of the screen */
+.fit_height_to_screen(@items_per_row, @offset: 0)
+{
+  //if offset is 0 or the browser does not support calc
+  width: (100 / @items_per_row) + 0%;
+  //and if it does:
+  //lessen offset if needed
+  @substract: -(@offset);
+  .calc_height((100 / @items_per_row + 0%), @substract);
+}
+
+
+/* !!!!!!!!!!! this section fits the different 2.4.2 twitter bootstrap buttons to a specific height !!!!!!!!!!! */
+/* in case of a normal btn we need to substract 10 pixels of the height */
+.fit_btn_height(@height)
+{
+  height: @height - 10px;
+}
+/* in case of a large btn we need to substract 24 pixels of the height */
+.fit_btn_height(@height, @btn-type) when (@btn-type = 'large')
+{
+  height: @height - 24px;
+}
+/* in case of a small btn we need to substract 6 pixels of the height */
+.fit_btn_height(@height, @btn-type) when (@btn-type = 'small')
+{
+  height: @height - 6px;
+}
+/* in case of a mini btn we need to substract 6 pixels of the height */
+.fit_btn_height(@height, @btn-type) when (@btn-type = 'mini')
+{
+  height: @height - 2px;
+}
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/

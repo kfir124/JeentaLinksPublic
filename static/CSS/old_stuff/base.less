@@ -1,0 +1,157 @@
+@import "bootstrap.less";
+@import "helpers.less";
+/*
+@mixin animate($duration: 1s, $delay: 0s)
+{
+  animation-delay:@delay;-webkit-animation-delay:@delay;-moz-animation-delay:@delay;-ms-animation-delay:@delay;-o-animation-delay:@delay;
+  -webkit-animation-fill-mode:both;-moz-animation-fill-mode:both;-ms-animation-fill-mode:both;-o-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-duration:@duration;-moz-animation-duration:@duration;-ms-animation-duration:@duration;-o-animation-duration:@duration;animation-duration:@duration;}.animated.hinge{-webkit-animation-duration:2s;-moz-animation-duration:2s;-ms-animation-duration:2s;-o-animation-duration:2s;animation-duration:2s;}@-webkit-keyframes flash {
+  0%, 50%, 100% {opacity: 1;}	25%, 75% {opacity: 0;}
+}
+*/
+a {
+  text-decoration:none;
+}
+
+.centered
+{
+    text-align:center;
+    margin-left: auto ;
+    margin-right: auto ;
+}
+
+#maindiv
+{
+	text-align:center;
+	display:table;
+	margin: 0 auto;
+    width: 100%;
+}
+
+#footerdiv {
+    text-align: center;
+    width:100%;
+}
+
+#copyrightsdiv {
+    display:none;
+    border-top:2px solid #aaa;
+    border-bottom:2px solid #aaa;
+}
+
+#container
+{
+    position:absolute;
+
+    left:0;
+    width:100%;
+    height:99%;
+}
+/* it contains all the three toppest divs(left mid and right) */
+@toppestdiv-height: 45px;
+#toppestdiv
+{
+    background-color:#2D2D2D;
+    color:white;
+    width:100%;
+    height:@toppestdiv-height;
+}
+
+#logo
+{
+  cursor: pointer;
+  width:200px;
+  height:@toppestdiv-height;
+}
+
+/* the shared attributes in all the toppest divs */
+.toppest_div_shared
+{
+   display:inline-block;
+   width: 33%;
+   height: 100%;
+}
+
+#toppestdivleft
+{
+  .toppest_div_shared;
+}
+
+#toppestdivmid
+{
+   .toppest_div_shared;
+   .centered;
+   font-size: @toppestdiv-height;
+}
+
+#toppestdivright
+{
+  .toppest_div_shared;
+  float: right;
+}
+
+.fit_to_toppest_div
+{
+  .fit_btn_height(@toppestdiv-height, 'large');
+}
+
+.MessageBox
+{
+	background-color: #9FC;
+	border: 1px solid #000;
+	padding: 5px;
+    max-width:300px;
+    max-height:300px;
+    .centered;
+}
+
+@color: DarkSlateGray;
+/* shared attributes within emptyWebsite and filledWebsite */
+.website_shared
+{
+   .img-rounded;
+   background-color: @color;
+}
+
+.emptyWebsite
+{
+  .website_shared;
+}
+
+.filledWebsite
+{
+  .website_shared;
+}
+
+@website_table_margin: 5px;
+#websites_table
+{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:@website_table_margin;
+}
+
+.website_cell
+{
+    height: 150px;
+    width: 190px;
+}
+
+.website_image
+{
+
+}
+
+.highlight
+{
+  background-color: LightBlue;
+}
+
+.forms_table
+{
+  width: 100%;
+}
+
+.manage_tabs_table
+{
+  width: auto;
+}

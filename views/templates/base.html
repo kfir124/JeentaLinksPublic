@@ -1,0 +1,142 @@
+﻿{% import '_formhelpers.html' as forms %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>{{ title|default("Jeentalinks1")|safe }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/CSS/base.css" />
+<link rel="stylesheet" href="/static/CSS/jquery-ui-darkness.css" />
+<link rel="stylesheet" href="/static/CSS/font-awesome.min.css">
+<!--[if IE 7]>
+  <link rel="stylesheet" href="/static/CSS/font-awesome-ie7.min.css">
+<![endif]-->
+{% block extra_css %}
+{% endblock extra_css %}
+{# added styles read by the Style model(db) #}
+<style>
+    {% set font_color = font_color or 'black' %}
+    body {
+        {% if background_color %}
+            background-color: {{ background_color }};
+        {% endif %}
+    }
+    #container {
+        {% if background_color %}
+            background-color: {{ background_color }};
+        {% endif %}
+        color: {{ font_color }};
+    }
+    .font_color {
+        color: {{ font_color }};
+    }
+    #toppestdiv {
+        {% if match_header_color %}
+            background-color: {{ background_color|default('#FFFFFF') }}
+        {% endif %}
+    }
+</style>
+<script src="/static/javascript/jquery.js"></script>
+<script src="/static/javascript/jquery-ui.js"></script>
+<script src="/static/javascript/jquery-ui-touch-punch.js"></script>
+<script src="/static/javascript/jquery-cookie.js"></script>
+<script src="/static/javascript/sijax/sijax.js"></script>
+<script src="/static/javascript/bootstrap.min.js"></script>
+<script type="text/javascript">
+    {{ g.sijax.get_js()|safe }}Sijax.setRequestUri("/ajax");
+</script>
+{% block extra_js %}
+{% endblock extra_js %}
+</head>
+<body>
+    <div id="container">
+        <div id="toppestdiv">
+            <span id="toppestdivleft">
+                {% block toppestdivleft %}
+                    {% set logo_path = logo_path or '/static/img/logo.png' %}
+                    <span class="pull-left"><img id="logo" class="logo" src="{{ logo_path }}"></span>
+                    <script>
+                        $("#logo").click(function() {
+                            window.location = "/";
+                        });
+                    </script>
+                {% endblock toppestdivleft %}
+            </span>
+            {% set cls = 'font_color' if match_header_color else '' %}
+            <span id="toppestdivmid" class="{{ cls }}">
+                {% block toppestdivmid %}
+
+                {% endblock toppestdivmid %}
+            </span>
+            <span id="toppestdivright">
+                {% block toppestdivright %}
+                    {% if user %}
+                        <span class="btn-group pull-right">
+                            <a class="btn btn-inverse btn-large fit_to_toppest_div" href="/portal/{{ portal.name }}"><i class="icon-user icon-white"></i> {{ user.username }}</a>
+                            <a class="btn btn-inverse btn-large dropdown-toggle fit_to_toppest_div" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                              <ul class="dropdown-menu">
+                                {# <li><a href="#"><i class="icon-pencil"></i> Edit settings</a></li> #}
+                                <li><a href="/tabimages"><i class="icon-table"></i> Edit tab images</a></li>
+                                <li><a href="/staticimages"><i class="icon-camera-retro"></i> Edit static images</a></li>
+                                <li><a href="/managetabs"><i class="icon-th-list"></i> Manage tabs</a></li>
+                                <li><a href="/managestyle"><i class="icon-magic"></i> Change style</a></li>
+                                {% if portal_name and is_owner|default(False) %}
+                                    <li class="disabled"><a class="disabled" href="#"><i class="icon-eye-open icon-white"></i> Visit your portal</a></li>
+                                {% else %}
+                                     <li><a href="/portal/{{ portal.name }}"><i class="icon-eye-open"></i> Visit your portal</a></li>
+                                {% endif %}
+                                <li class="divider"></li>
+                                <li><a href="/logout/{{ csrf_token() }}"><i class="i"></i> Logout</a></li>
+                              </ul>
+                        </span>
+                    {% endif %}
+
+                    {% if not user %}
+                        <span class="btn-group pull-right">
+                            <a class="btn btn-inverse btn-large fit_to_toppest_div" href="/register">Register</a>
+                            <a class="btn btn-inverse btn-large fit_to_toppest_div" href="/login">Login</a>
+                        </span>
+                    {% endif %}
+                {% endblock toppestdivright %}
+            </span>
+        </div><br />
+            <div id="maindiv" name="maindiv" align="center" class="font_color">
+                {% block header_msg %}
+                    {% with headermsgs = get_flashed_messages(category_filter=["headermsg"]) %}
+                        {% if headermsgs %}
+                        <div id="header_msg" name="header_msg" class="MessageBox">
+                            {% for msg in headermsgs %}
+                                {{ msg }}<br />
+                            {% endfor %}
+                            {{ forms.button('hideMsgButton', 'hide', '$("#header_msg").hide("slow")') }}
+                        </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endblock header_msg %}
+
+                {% block before_main %}
+
+                {% endblock before_main %}
+
+                {% block main %}
+
+                    {{ forms.print_websites(rows|default(0), items_per_row|default(0), websites|default(None), edit_mode|default(False)) }}
+                {% endblock main %}
+            </div>
+        <div id="footerdiv" name="footerdiv" align="center">
+            <div id="copyrightsdiv" align="center">
+                {% block footer %}email and stuff{% endblock footer %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46655022-1', '54.213.26.7');
+  ga('send', 'pageview');
+
+</script>
